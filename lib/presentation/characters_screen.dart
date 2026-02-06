@@ -12,6 +12,13 @@ class CharactersScreen extends StatefulWidget {
 }
 
 class _CharactersScreenState extends State<CharactersScreen> {
+
+  @override
+  void initState() {
+    Provider.of<CharactersState>(context, listen: false).init();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

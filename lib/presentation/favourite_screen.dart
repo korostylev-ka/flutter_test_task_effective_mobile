@@ -18,11 +18,11 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         builder: (context, state, child) {
           return Center(
             child: ListView.builder(
-              itemCount: state.characters.length,
+              itemCount: state.favouriteCharacters.length,
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return CharacterCard(character: state.characters[index]);
+                return CharacterCard(character: state.favouriteCharacters[index]);
               },
             ),
           );
