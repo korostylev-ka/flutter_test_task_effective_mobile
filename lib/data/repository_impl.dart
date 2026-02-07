@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:test_task_for_effective_mobile/data/shared_prefs/app_shared_preferences.dart';
 import '../domain/character.dart';
 import '../domain/repository.dart';
 import '../domain/status.dart';
@@ -40,7 +41,8 @@ class RepositoryImpl implements Repository {
         await DBService.instance().delete(character.name);
       }
     } else {
-      //TODO('Shared pref to add')
+      AppSharedPreferences sharedPrefs = AppSharedPreferences();
+      await sharedPrefs.addFavouriteCharacterToSharedPref(character);
     }
   }
 
@@ -85,8 +87,8 @@ class RepositoryImpl implements Repository {
           .getFavouriteCharacters();
       return _mapper.characterEntityListToCharacterList(characterEntities);
     } else {
-      return _charactersList;
-      //TODO('Shared pref to add')
+      AppSharedPreferences sharedPrefs = AppSharedPreferences();
+      return sharedPrefs.getFavouriteCharactersListFromSharedPref();
     }
   }
 

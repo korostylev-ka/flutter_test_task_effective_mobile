@@ -11,8 +11,8 @@ class CharactersState extends ChangeNotifier {
 
   Future<void> init() async {
     if (_characters.isEmpty) {
-      loadCharacters();
-      getFavouriteCharacters();
+      await loadCharacters();
+      await getFavouriteCharacters();
     }
   }
 

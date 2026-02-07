@@ -7,7 +7,7 @@ import 'package:test_task_for_effective_mobile/state/characters_state.dart';
 
 import 'data/db/db_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (defaultTargetPlatform == TargetPlatform.android ||
       defaultTargetPlatform == TargetPlatform.iOS) {

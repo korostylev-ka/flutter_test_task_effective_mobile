@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'character_entity.dart';
 
 class DBService {
-  late final Future<Database> database;
+  late Future<Database> database;
   static DBService? service;
 
   static DBService instance() {
@@ -17,8 +17,8 @@ class DBService {
   void init() async {
     database = openDatabase(
       join(await getDatabasesPath(), CharacterEntity.dbFileName),
-      onCreate: (db, version) {
-        return db.execute(CharacterEntity.createDB);
+      onCreate: (db, version) async {
+        await db.execute(CharacterEntity.createDB);
       },
       version: 1,
     );
