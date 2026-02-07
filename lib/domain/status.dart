@@ -8,7 +8,7 @@ enum Status {
   final String statusText;
   const Status(this.statusText);
 
-  static Status getStatus(String statusText) {
+  static Status getStatusFromApiStatus(String statusText) {
     if (statusText == 'Alive') {
       return Status.alive;
     } else if (statusText == 'Dead') {
@@ -16,6 +16,15 @@ enum Status {
     } else {
       return Status.unknown;
     }
+  }
+
+  static Status getStatusFromStatusText(String statusText) {
+    for (Status element in Status.values) {
+      if (element.statusText == statusText) {
+        return element;
+      }
+    }
+    return Status.unknown;
   }
 
   static Status getStatusFromString(String statusAsString) {

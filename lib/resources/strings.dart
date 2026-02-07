@@ -9,4 +9,8 @@ class Strings {
   static const location = 'Локация:';
   static const status = 'Статус:';
   static const favourite = 'Избранное: ';
+  static const sortByName = 'Сортировка по имени';
+  static const sortByStatus = 'Сортировка по статусу';
+  static const sortByLocation = 'Сортировка по локации';
+  static const sort = 'Сортировка';
 }

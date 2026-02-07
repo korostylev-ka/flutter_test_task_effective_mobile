@@ -4,15 +4,16 @@ import '../domain/character.dart';
 
 class CharactersState extends ChangeNotifier {
   final _repository = RepositoryImpl();
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
   List<Character> _characters = [];
   List<Character> get characters => _characters;
   List<Character> _favouriteCharacters = [];
   List<Character> get favouriteCharacters => _favouriteCharacters;
 
-  Future<void> init() async {
+  void init() async {
     if (_characters.isEmpty) {
       await loadCharacters();
-      await getFavouriteCharacters();
     }
   }
 
@@ -28,13 +29,16 @@ class CharactersState extends ChangeNotifier {
   }
 
   Future<void> loadCharacters() async {
+    _isLoading = true;
     var newCharacters = await _repository.loadNewCharacters();
+    _favouriteCharacters = await _repository.getFavouriteCharacters();
     for (int i = 0; i < newCharacters.length; i++) {
       if (_favouriteCharacters.contains(newCharacters[i])) {
         newCharacters[i] = Character.favourite(newCharacters[i]);
       }
     }
     _characters.addAll(newCharacters);
+    _isLoading = false;
     notifyListeners();
   }
 
@@ -46,7 +50,7 @@ class CharactersState extends ChangeNotifier {
 
   void addToFavourite(Character character) async {
     await _repository.addToFavourite(character);
-    getFavouriteCharacters();
+    await getFavouriteCharacters();
     for (int i = 0; i < _characters.length; i++) {
       if (character.name == _characters[i].name) {
         var newCharacter = Character.favourite(character);
@@ -55,4 +59,20 @@ class CharactersState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void sortFavouriteByName() {
+    _favouriteCharacters.sort((a, b) => a.name.compareTo(b.name));
+    notifyListeners();
+  }
+
+  void sortFavouriteByStatus() {
+    _favouriteCharacters.sort((a, b) => a.status.statusText.compareTo(b.status.statusText));
+    notifyListeners();
+  }
+
+  void sortFavouriteByLocation() {
+    _favouriteCharacters.sort((a, b) => a.location.compareTo(b.location));
+    notifyListeners();
+  }
+
 }

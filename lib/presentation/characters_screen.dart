@@ -12,11 +12,18 @@ class CharactersScreen extends StatefulWidget {
 }
 
 class _CharactersScreenState extends State<CharactersScreen> {
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
-    Provider.of<CharactersState>(context, listen: false).init();
     super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.maxScrollExtent ==
+          _scrollController.offset) {
+        Provider.of<CharactersState>(context, listen: false).loadCharacters();
+      }
+    });
+    Provider.of<CharactersState>(context, listen: false).init();
   }
 
   @override
@@ -25,13 +32,24 @@ class _CharactersScreenState extends State<CharactersScreen> {
       child: Consumer<CharactersState>(
         builder: (context, state, child) {
           return Center(
-            child: ListView.builder(
-              itemCount: state.characters.length,
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return CharacterCard(character: state.characters[index]);
-              },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                ListView.builder(
+                  key: PageStorageKey<String>('controller'),
+                  controller: _scrollController,
+                  itemCount: state.characters.length,
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return CharacterCard(character: state.characters[index]);
+                  },
+                ),
+                Visibility(
+                  visible: state.isLoading,
+                  child: CircularProgressIndicator(),
+                ),
+              ],
             ),
           );
         },

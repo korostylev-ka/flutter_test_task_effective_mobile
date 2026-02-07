@@ -17,7 +17,7 @@ class Mapper {
       image: characterEntity.image,
       name: characterEntity.name,
       species: characterEntity.species,
-      status: Status.getStatusFromString(characterEntity.status),
+      status: Status.getStatusFromStatusText(characterEntity.status),
       location: characterEntity.location,
       isFavourite: true,
     );

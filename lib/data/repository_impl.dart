@@ -64,7 +64,7 @@ class RepositoryImpl implements Repository {
             image: image,
             name: name,
             species: species,
-            status: Status.getStatus(status),
+            status: Status.getStatusFromApiStatus(status),
             location: location,
           );
           characters.add(character);
@@ -88,7 +88,7 @@ class RepositoryImpl implements Repository {
       return _mapper.characterEntityListToCharacterList(characterEntities);
     } else {
       AppSharedPreferences sharedPrefs = AppSharedPreferences();
-      return sharedPrefs.getFavouriteCharactersListFromSharedPref();
+      return await sharedPrefs.getFavouriteCharactersListFromSharedPref();
     }
   }
 
