@@ -8,9 +8,10 @@ import '../resources/text_styles.dart';
 import '../state/characters_state.dart';
 
 class CharacterCard extends StatefulWidget {
-  const CharacterCard({super.key, required this.character});
+  const CharacterCard({super.key, required this.character, required this.image});
 
   final Character character;
+  final Image image;
 
   @override
   State<CharacterCard> createState() => _CharacterCardState();
@@ -32,7 +33,8 @@ class _CharacterCardState extends State<CharacterCard> {
             flex: 1,
             child: FittedBox(
               fit: BoxFit.contain,
-              child: Image.network(widget.character.image),
+              child: widget.image,
+              //child: Image.network(widget.character.image),
             ),
           ),
           SizedBox(width: Dimens.spaceBetweenBlocks),

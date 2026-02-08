@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import '../domain/character.dart';
 import '../domain/status.dart';
 import 'db/character_entity.dart';
@@ -14,12 +13,27 @@ class Mapper {
 
   Character characterEntityToCharacter(CharacterEntity characterEntity) {
     return Character(
-      image: characterEntity.image,
+      image: characterEntity.savedImage,
       name: characterEntity.name,
       species: characterEntity.species,
       status: Status.getStatusFromStatusText(characterEntity.status),
       location: characterEntity.location,
-      isFavourite: true,
+      isFavourite: characterEntity.isFavourite,
+    );
+  }
+
+  CharacterEntity characterToCharacterEntity(
+    Character character,
+    String savedImage,
+  ) {
+    return CharacterEntity.of(
+      image: character.image,
+      savedImage: savedImage,
+      name: character.name,
+      species: character.species,
+      status: character.status.statusText,
+      location: character.location,
+      isFavourite: character.isFavourite,
     );
   }
 

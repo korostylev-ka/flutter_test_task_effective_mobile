@@ -13,31 +13,21 @@ class CharactersState extends ChangeNotifier {
 
   void init() async {
     if (_characters.isEmpty) {
-      await loadCharacters();
+      loadCharacters();
     }
   }
 
   Future<List<Character>> getAllCharacters() async {
     _characters = await _repository.getAllCharacters();
-    for (int i = 0; i < _characters.length; i++) {
-      if (_favouriteCharacters.contains(_characters[i])) {
-        _characters[i] = Character.favourite(_characters[i]);
-      }
-    }
     notifyListeners();
     return _characters;
   }
 
   Future<void> loadCharacters() async {
     _isLoading = true;
-    var newCharacters = await _repository.loadNewCharacters();
+    await _repository.loadNewCharacters();
     _favouriteCharacters = await _repository.getFavouriteCharacters();
-    for (int i = 0; i < newCharacters.length; i++) {
-      if (_favouriteCharacters.contains(newCharacters[i])) {
-        newCharacters[i] = Character.favourite(newCharacters[i]);
-      }
-    }
-    _characters.addAll(newCharacters);
+    _characters = await getAllCharacters();
     _isLoading = false;
     notifyListeners();
   }
@@ -66,7 +56,9 @@ class CharactersState extends ChangeNotifier {
   }
 
   void sortFavouriteByStatus() {
-    _favouriteCharacters.sort((a, b) => a.status.statusText.compareTo(b.status.statusText));
+    _favouriteCharacters.sort(
+      (a, b) => a.status.statusText.compareTo(b.status.statusText),
+    );
     notifyListeners();
   }
 
@@ -74,5 +66,4 @@ class CharactersState extends ChangeNotifier {
     _favouriteCharacters.sort((a, b) => a.location.compareTo(b.location));
     notifyListeners();
   }
-
 }

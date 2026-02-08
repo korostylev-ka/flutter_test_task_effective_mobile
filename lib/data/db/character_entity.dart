@@ -1,9 +1,11 @@
 class CharacterEntity {
   String image;
+  String savedImage;
   String name;
   String species;
   String location;
   String status;
+  bool isFavourite;
 
   static const dbFileName = 'character_database.db';
   static const table = 'characters';
@@ -11,26 +13,32 @@ class CharacterEntity {
       'CREATE TABLE characters('
       'name TEXT PRIMARY KEY,'
       'image TEXT,'
+      'savedImage TEXT,'
       'species TEXT,'
       'location TEXT,'
-      'status TEXT'
+      'status TEXT,'
+      'isFavourite INTEGER'
       ')';
 
   CharacterEntity.of({
     required this.image,
+    required this.savedImage,
     required this.name,
     required this.species,
     required this.location,
     required this.status,
+    required this.isFavourite
   });
 
   Map<String, Object?> toMap() {
     return {
       'name': name,
       'image': image,
+      'savedImage': savedImage,
       'species': species,
       'location': location,
       'status': status,
+      'isFavourite': isFavourite ? 1 : 0
     };
   }
 }

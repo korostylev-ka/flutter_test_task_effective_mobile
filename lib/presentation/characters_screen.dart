@@ -1,7 +1,8 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_task_for_effective_mobile/state/characters_state.dart';
-
 import 'character_card.dart';
 
 class CharactersScreen extends StatefulWidget {
@@ -13,6 +14,32 @@ class CharactersScreen extends StatefulWidget {
 
 class _CharactersScreenState extends State<CharactersScreen> {
   final _scrollController = ScrollController();
+
+  Image _loadImage(String imageName) {
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        final file = File(imageName);
+        final imageFromCache = Image.file(file);
+        return imageFromCache;
+      } catch (e) {
+        return Image.network(
+          imageName,
+          errorBuilder: (context, object, stacktrace) {
+            return Image.asset('assets/images/no_photo.jpg');
+          },
+        );
+      }
+    } else {
+      return Image.network(
+        imageName,
+        errorBuilder: (context, object, stacktrace) {
+          return Image.asset('assets/images/no_photo.jpg');
+        },
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -42,7 +69,10 @@ class _CharactersScreenState extends State<CharactersScreen> {
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return CharacterCard(character: state.characters[index]);
+                    return CharacterCard(
+                      character: state.characters[index],
+                      image: _loadImage(state.characters[index].image),
+                    );
                   },
                 ),
                 Visibility(
