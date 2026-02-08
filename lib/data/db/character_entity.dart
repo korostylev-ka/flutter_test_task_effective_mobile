@@ -1,6 +1,5 @@
 class CharacterEntity {
   String image;
-  String savedImage;
   String name;
   String species;
   String location;
@@ -13,7 +12,6 @@ class CharacterEntity {
       'CREATE TABLE characters('
       'name TEXT PRIMARY KEY,'
       'image TEXT,'
-      'savedImage TEXT,'
       'species TEXT,'
       'location TEXT,'
       'status TEXT,'
@@ -22,7 +20,6 @@ class CharacterEntity {
 
   CharacterEntity.of({
     required this.image,
-    required this.savedImage,
     required this.name,
     required this.species,
     required this.location,
@@ -34,7 +31,6 @@ class CharacterEntity {
     return {
       'name': name,
       'image': image,
-      'savedImage': savedImage,
       'species': species,
       'location': location,
       'status': status,

@@ -8,9 +8,15 @@ import '../resources/text_styles.dart';
 import '../state/characters_state.dart';
 
 class CharacterCard extends StatefulWidget {
-  const CharacterCard({super.key, required this.character, required this.image});
+  const CharacterCard({
+    super.key,
+    required this.character,
+    required this.image,
+    required this.onClickCallback,
+  });
 
   final Character character;
+  final void Function() onClickCallback;
   final Image image;
 
   @override
@@ -18,7 +24,6 @@ class CharacterCard extends StatefulWidget {
 }
 
 class _CharacterCardState extends State<CharacterCard> {
-  //final repository = RepositoryImpl();
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +39,6 @@ class _CharacterCardState extends State<CharacterCard> {
             child: FittedBox(
               fit: BoxFit.contain,
               child: widget.image,
-              //child: Image.network(widget.character.image),
             ),
           ),
           SizedBox(width: Dimens.spaceBetweenBlocks),
@@ -86,10 +90,7 @@ class _CharacterCardState extends State<CharacterCard> {
             child: FittedBox(
               child: IconButton(
                 onPressed: () {
-                  Provider.of<CharactersState>(
-                    context,
-                    listen: false,
-                  ).addToFavourite(widget.character);
+                  widget.onClickCallback();
                 },
                 icon: widget.character.isFavourite
                     ? Icon(Icons.star, color: Colors.red)

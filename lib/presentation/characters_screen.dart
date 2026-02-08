@@ -47,6 +47,7 @@ class _CharactersScreenState extends State<CharactersScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent ==
           _scrollController.offset) {
+        print('SCroll position is ${_scrollController.offset}');
         Provider.of<CharactersState>(context, listen: false).loadCharacters();
       }
     });
@@ -71,6 +72,12 @@ class _CharactersScreenState extends State<CharactersScreen> {
                   itemBuilder: (context, index) {
                     return CharacterCard(
                       character: state.characters[index],
+                      onClickCallback: () {
+                        Provider.of<CharactersState>(
+                          context,
+                          listen: false,
+                        ).addToFavourite(state.characters[index]);
+                      },
                       image: _loadImage(state.characters[index].image),
                     );
                   },

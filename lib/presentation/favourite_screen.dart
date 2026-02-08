@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../resources/strings.dart';
 import '../state/characters_state.dart';
+import 'animated_favourites_list.dart';
 import 'character_card.dart';
 
 class FavouriteScreen extends StatefulWidget {
@@ -14,6 +16,7 @@ class FavouriteScreen extends StatefulWidget {
 }
 
 class _FavouriteScreenState extends State<FavouriteScreen> {
+
   void sortByName() {
     Provider.of<CharactersState>(context, listen: false).sortFavouriteByName();
   }
@@ -78,19 +81,8 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: state.favouriteCharacters.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return CharacterCard(
-                        character: state.favouriteCharacters[index],
-                        image: Image.network(
-                          state.favouriteCharacters[index].image),
-
-                        //image: Image.file(File(state.favouriteCharacters[index].image)),
-                      );
-                    },
+                  child: AnimatedFavouritesList(
+                    favourites: state.favouriteCharacters,
                   ),
                 ),
               ],

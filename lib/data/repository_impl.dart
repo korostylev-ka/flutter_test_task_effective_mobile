@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:test_task_for_effective_mobile/data/shared_prefs/app_shared_preferences.dart';
@@ -30,11 +31,9 @@ class RepositoryImpl implements Repository {
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
       final database = DBService.instance();
-      final characterEntity = await database.getCharacterEntity(character.name);
       await database.update(
         _mapper.characterToCharacterEntity(
-          Character.favourite(character),
-          characterEntity!.savedImage,
+          Character.favourite(character)
         ),
       );
     } else {
@@ -45,6 +44,8 @@ class RepositoryImpl implements Repository {
 
   @override
   Future<List<Character>> loadNewCharacters() async {
+    AppSharedPreferences sharedPrefs = AppSharedPreferences();
+    _urlForGetCharacters = await sharedPrefs.getUrlForNewCharactersFromSharedPref();
     List<Character> characters = [];
     try {
       var response = await _api.getCharacters(_urlForGetCharacters);
@@ -65,10 +66,10 @@ class RepositoryImpl implements Repository {
             location: location,
           );
           characters.add(character);
-          await addNewCharacter(character);
         }
+        await addNewCharactersList(characters);
         String nextPage = data[_infoKey][_nextPageKey];
-        _urlForGetCharacters = nextPage;
+        await sharedPrefs.addUrlForNewCharactersToSharedPref(nextPage);
       }
     } catch (e) {
       return characters;
@@ -106,10 +107,9 @@ class RepositoryImpl implements Repository {
     final imageFromApi = await http.get(Uri.parse(character.image));
     final dir = await getApplicationDocumentsDirectory();
     final imageName = character.name.replaceAll(' ', '');
-    ;
     final imagePath = '${dir.path}/$imageName.jpg';
     final file = File(imagePath);
-    await file.writeAsBytes(imageFromApi.bodyBytes);
+    file.writeAsBytes(imageFromApi.bodyBytes);
     return imagePath;
   }
 
@@ -123,12 +123,39 @@ class RepositoryImpl implements Repository {
       if (characterEntity == null) {
         String imageName = await saveImageToDeviceFromUrl(character);
         await database.insert(
-          _mapper.characterToCharacterEntity(character, imageName),
+          _mapper.characterToCharacterEntity(character),
         );
       }
     } else {
       AppSharedPreferences sharedPrefs = AppSharedPreferences();
       await sharedPrefs.addCharacterToSharedPref(character);
     }
+  }
+
+  Future<void> addNewCharactersList(List<Character> characters) async {
+    final allCharacters = await getAllCharacters();
+    List<Character> charactersToAdd = [];
+    for (var character in characters) {
+      if (!allCharacters.contains(character)) {
+        charactersToAdd.add(character);
+      }
+    }
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      final database = DBService.instance();
+      for (var character in charactersToAdd) {
+        String imagePath = await saveImageToDeviceFromUrl(character);
+        character.image = imagePath;
+        database.insert(
+            _mapper.characterToCharacterEntity(character)
+        );
+      }
+
+
+    } else {
+    AppSharedPreferences sharedPrefs = AppSharedPreferences();
+    await sharedPrefs.addCharactersListToSharedPref(characters);
+    }
+
   }
 }

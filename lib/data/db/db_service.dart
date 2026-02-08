@@ -5,7 +5,6 @@ import 'character_entity.dart';
 class DBService {
   late Future<Database> database;
   static DBService? service;
-
   static DBService instance() {
     if (service == null) {
       service = DBService();
@@ -33,6 +32,19 @@ class DBService {
     );
   }
 
+  Future<void> insertListCharacters(
+    List<CharacterEntity> charactersEntity,
+  ) async {
+    final db = await database;
+    for (var character in charactersEntity) {
+      await db.insert(
+        CharacterEntity.table,
+        character.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
+
   Future<List<CharacterEntity>> getAllCharacters() async {
     final db = await database;
     final List<Map<String, Object?>> charactersMap = await db.query(
@@ -40,23 +52,21 @@ class DBService {
     );
     return [
       for (final {
-      'image': image as String,
-      'savedImage': savedImage as String,
-      'name': name as String,
-      'species': species as String,
-      'location': location as String,
-      'status': status as String,
-      'isFavourite': isFavourite as int
-      }
-      in charactersMap)
+            'image': image as String,
+            'name': name as String,
+            'species': species as String,
+            'location': location as String,
+            'status': status as String,
+            'isFavourite': isFavourite as int,
+          }
+          in charactersMap)
         CharacterEntity.of(
-            image: image,
-            savedImage: savedImage,
-            name: name,
-            species: species,
-            location: location,
-            status: status,
-            isFavourite: isFavourite == 1 ? true : false
+          image: image,
+          name: name,
+          species: species,
+          location: location,
+          status: status,
+          isFavourite: isFavourite == 1 ? true : false,
         ),
     ];
   }
@@ -71,23 +81,20 @@ class DBService {
     return [
       for (final {
             'image': image as String,
-            'savedImage': savedImage as String,
             'name': name as String,
             'species': species as String,
             'location': location as String,
             'status': status as String,
-            'isFavourite': isFavourite as int
+            'isFavourite': isFavourite as int,
           }
           in charactersMap)
-
         CharacterEntity.of(
           image: image,
-          savedImage: savedImage,
           name: name,
           species: species,
           location: location,
           status: status,
-          isFavourite: isFavourite == 1
+          isFavourite: isFavourite == 1,
         ),
     ];
   }
@@ -102,29 +109,26 @@ class DBService {
     if (charactersMap.isNotEmpty) {
       return [
         for (final {
-        'image': image as String,
-        'savedImage': savedImage as String,
-        'name': name as String,
-        'species': species as String,
-        'location': location as String,
-        'status': status as String,
-        'isFavourite': isFavourite as int
-        }
-        in charactersMap)
+              'image': image as String,
+              'name': name as String,
+              'species': species as String,
+              'location': location as String,
+              'status': status as String,
+              'isFavourite': isFavourite as int,
+            }
+            in charactersMap)
           CharacterEntity.of(
-              image: image,
-              savedImage: savedImage,
-              name: name,
-              species: species,
-              location: location,
-              status: status,
-              isFavourite: isFavourite == 1
+            image: image,
+            name: name,
+            species: species,
+            location: location,
+            status: status,
+            isFavourite: isFavourite == 1,
           ),
       ].first;
     } else {
       return null;
     }
-
   }
 
   Future<void> delete(String name) async {

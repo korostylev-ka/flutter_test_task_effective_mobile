@@ -5,7 +5,20 @@ import '../mapper.dart';
 class AppSharedPreferences {
   final _favourite = 'favourite characters';
   final _allCharacters = 'all characters';
+  final _url = 'url for new characters';
+  final _defaultUrl = 'https://rickandmortyapi.com/api/character';
   final _mapper = Mapper();
+
+  Future<void> addUrlForNewCharactersToSharedPref(String url) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove(_url);
+    await prefs.setString(_url, url);
+  }
+
+  Future<String> getUrlForNewCharactersFromSharedPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_url) ?? _defaultUrl;
+  }
 
   Future<void> addFavouriteCharacterToSharedPref(Character character) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -28,6 +41,20 @@ class AppSharedPreferences {
     prefs.remove(_allCharacters);
     if (!characters.contains(character)) {
       characters.add(character);
+    }
+    prefs.remove(_allCharacters);
+    await saveCharactersListToSharedPref(characters);
+  }
+
+  Future<void> addCharactersListToSharedPref(
+    List<Character> newCharacters
+  ) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<Character> characters = await getAllCharactersListFromSharedPref();
+    for (final character in newCharacters) {
+      if (!characters.contains(character)) {
+        characters.add(character);
+      }
     }
     prefs.remove(_allCharacters);
     await saveCharactersListToSharedPref(characters);

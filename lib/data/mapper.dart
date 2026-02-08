@@ -13,7 +13,7 @@ class Mapper {
 
   Character characterEntityToCharacter(CharacterEntity characterEntity) {
     return Character(
-      image: characterEntity.savedImage,
+      image: characterEntity.image,
       name: characterEntity.name,
       species: characterEntity.species,
       status: Status.getStatusFromStatusText(characterEntity.status),
@@ -22,13 +22,9 @@ class Mapper {
     );
   }
 
-  CharacterEntity characterToCharacterEntity(
-    Character character,
-    String savedImage,
-  ) {
+  CharacterEntity characterToCharacterEntity(Character character) {
     return CharacterEntity.of(
       image: character.image,
-      savedImage: savedImage,
       name: character.name,
       species: character.species,
       status: character.status.statusText,
