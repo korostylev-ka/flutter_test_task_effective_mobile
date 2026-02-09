@@ -9,8 +9,6 @@ android {
     namespace = "com.korostylev.test_task_for_effective_mobile"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
-    //ndkVersion = flutter.ndkVersion
-
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

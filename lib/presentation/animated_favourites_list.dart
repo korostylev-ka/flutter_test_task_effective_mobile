@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_task_for_effective_mobile/state/characters_state.dart';
@@ -17,32 +15,6 @@ class AnimatedFavouritesList extends StatefulWidget {
 class _AnimatedFavouritesListState extends State<AnimatedFavouritesList> {
   final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey();
 
-  Image _loadImage(String imageName) {
-    if (defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.iOS) {
-      try {
-        final file = File(imageName);
-        final imageFromCache = Image.file(file);
-        return imageFromCache;
-      } catch (e) {
-        return Image.network(
-          imageName,
-          errorBuilder: (context, object, stacktrace) {
-            return Image.asset('assets/images/no_photo.jpg');
-          },
-        );
-      }
-    } else {
-      return Image.network(
-        imageName,
-        errorBuilder: (context, object, stacktrace) {
-          return Image.asset('assets/images/no_photo.jpg');
-        },
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return AnimatedList(
@@ -59,7 +31,6 @@ class _AnimatedFavouritesListState extends State<AnimatedFavouritesList> {
       sizeFactor: animation,
       child: CharacterCard(
         character: character,
-        image: _loadImage(character.image),
         onClickCallback: () {
           _removeFavourite(character);
         },

@@ -11,7 +11,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int currentIndex = 0;
+  int _currentIndex = 0;
   ThemeMode _themeMode = ThemeMode.system;
   late bool _isDarkThemeOnDevice;
   late bool _isDarkThemeApp;
@@ -73,7 +73,7 @@ class _MainScreenState extends State<MainScreen> {
       themeMode: _themeMode,
       home: Scaffold(
         appBar: AppBar(
-          title: currentIndex == 0
+          title: _currentIndex == 0
               ? Text(Strings.homeLabel)
               : Text(Strings.favouriteLabel),
           leading: IconButton(
@@ -88,13 +88,13 @@ class _MainScreenState extends State<MainScreen> {
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: currentIndex == 0
+              icon: _currentIndex == 0
                   ? Icon(Icons.home, color: Colors.blue)
                   : Icon(Icons.home),
               label: Strings.homeLabel,
             ),
             BottomNavigationBarItem(
-              icon: currentIndex == 1
+              icon: _currentIndex == 1
                   ? Icon(Icons.favorite, color: Colors.red)
                   : Icon(Icons.favorite),
               label: Strings.favouriteLabel,
@@ -102,11 +102,11 @@ class _MainScreenState extends State<MainScreen> {
           ],
           onTap: (index) {
             setState(() {
-              currentIndex = index;
+              _currentIndex = index;
             });
           },
         ),
-        body: [CharactersScreen(), FavouriteScreen()][currentIndex],
+        body: [CharactersScreen(), FavouriteScreen()][_currentIndex],
       ),
     );
   }

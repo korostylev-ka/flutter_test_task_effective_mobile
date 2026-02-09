@@ -1,16 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:test_task_for_effective_mobile/data/shared_prefs/app_shared_preferences.dart';
+import 'package:test_task_for_effective_mobile/di/dependency_injection.dart';
 import '../domain/character.dart';
 import '../domain/repository.dart';
 import '../domain/status.dart';
-import 'api.dart';
-import 'db/character_entity.dart';
 import 'db/db_service.dart';
-import 'mapper.dart';
 import 'package:http/http.dart' as http;
 
 class RepositoryImpl implements Repository {
@@ -22,8 +18,8 @@ class RepositoryImpl implements Repository {
   final _speciesKey = 'species';
   final _locationKey = 'location';
   final _nextPageKey = 'next';
-  final _api = Api();
-  final _mapper = Mapper();
+  final _api = DependencyInjection.getApi();
+  final _mapper = DependencyInjection.getMapper();
   String _urlForGetCharacters = 'https://rickandmortyapi.com/api/character';
 
   @override
@@ -32,25 +28,25 @@ class RepositoryImpl implements Repository {
         defaultTargetPlatform == TargetPlatform.iOS) {
       final database = DBService.instance();
       await database.update(
-        _mapper.characterToCharacterEntity(
-          Character.favourite(character)
-        ),
+        _mapper.characterToCharacterEntity(Character.favourite(character)),
       );
     } else {
-      AppSharedPreferences sharedPrefs = AppSharedPreferences();
+      final sharedPrefs = DependencyInjection.getSharedPrefs();
       await sharedPrefs.addFavouriteCharacterToSharedPref(character);
     }
   }
 
   @override
   Future<List<Character>> loadNewCharacters() async {
-    AppSharedPreferences sharedPrefs = AppSharedPreferences();
-    _urlForGetCharacters = await sharedPrefs.getUrlForNewCharactersFromSharedPref();
+    final sharedPrefs = DependencyInjection.getSharedPrefs();
+    _urlForGetCharacters = await sharedPrefs
+        .getUrlForNewCharactersFromSharedPref();
     List<Character> characters = [];
     try {
       var response = await _api.getCharacters(_urlForGetCharacters);
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
+
         var list = data[_resultsKey];
         for (var characterItem in list) {
           String name = characterItem[_nameKey];
@@ -81,11 +77,11 @@ class RepositoryImpl implements Repository {
   Future<List<Character>> getFavouriteCharacters() async {
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
-      final database = DBService.instance();
+      final database = DependencyInjection.getDatabase();
       final characterEntities = await database.getFavouriteCharacters();
       return _mapper.characterEntityListToCharacterList(characterEntities);
     } else {
-      AppSharedPreferences sharedPrefs = AppSharedPreferences();
+      final sharedPrefs = DependencyInjection.getSharedPrefs();
       return await sharedPrefs.getFavouriteCharactersListFromSharedPref();
     }
   }
@@ -94,41 +90,39 @@ class RepositoryImpl implements Repository {
   Future<List<Character>> getAllCharacters() async {
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
-      final database = DBService.instance();
+      final database = DependencyInjection.getDatabase();
       final favouriteEntities = await database.getAllCharacters();
       return _mapper.characterEntityListToCharacterList(favouriteEntities);
     } else {
-      AppSharedPreferences sharedPrefs = AppSharedPreferences();
+      final sharedPrefs = DependencyInjection.getSharedPrefs();
       return await sharedPrefs.getAllCharactersListFromSharedPref();
     }
   }
 
-  Future<String> saveImageToDeviceFromUrl(Character character) async {
-    final imageFromApi = await http.get(Uri.parse(character.image));
-    final dir = await getApplicationDocumentsDirectory();
-    final imageName = character.name.replaceAll(' ', '');
-    final imagePath = '${dir.path}/$imageName.jpg';
-    final file = File(imagePath);
-    file.writeAsBytes(imageFromApi.bodyBytes);
-    return imagePath;
-  }
-
-  Future<void> addNewCharacter(Character character) async {
+  Future<void> saveImageToDeviceFromUrl(Character character) async {
     if (defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS) {
-      final database = DBService.instance();
-      CharacterEntity? characterEntity = await database.getCharacterEntity(
-        character.name,
-      );
-      if (characterEntity == null) {
-        String imageName = await saveImageToDeviceFromUrl(character);
-        await database.insert(
-          _mapper.characterToCharacterEntity(character),
-        );
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.windows) {
+      final imageFromApi = await http.get(Uri.parse(character.image));
+      if (imageFromApi.statusCode == 200) {
+        final dir = await getApplicationDocumentsDirectory();
+        final imageName = character.name.replaceAll(' ', '');
+        final imagePath = '${dir.path}/$imageName.jpg';
+        final file = File(imagePath);
+        file.writeAsBytes(imageFromApi.bodyBytes);
+        character.image = imagePath;
+        if (defaultTargetPlatform == TargetPlatform.android ||
+            defaultTargetPlatform == TargetPlatform.iOS) {
+          final database = DependencyInjection.getDatabase();
+          await database.update(
+            _mapper.characterToCharacterEntity(character),
+          );
+        }
+        if (defaultTargetPlatform == TargetPlatform.windows) {
+          final sharedPrefs = DependencyInjection.getSharedPrefs();
+          await sharedPrefs.updateCharacterInSharedPref(character);
+        }
       }
-    } else {
-      AppSharedPreferences sharedPrefs = AppSharedPreferences();
-      await sharedPrefs.addCharacterToSharedPref(character);
     }
   }
 
@@ -142,20 +136,13 @@ class RepositoryImpl implements Repository {
     }
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
-      final database = DBService.instance();
+      final database = DependencyInjection.getDatabase();
       for (var character in charactersToAdd) {
-        String imagePath = await saveImageToDeviceFromUrl(character);
-        character.image = imagePath;
-        database.insert(
-            _mapper.characterToCharacterEntity(character)
-        );
+        database.insert(_mapper.characterToCharacterEntity(character));
       }
-
-
     } else {
-    AppSharedPreferences sharedPrefs = AppSharedPreferences();
-    await sharedPrefs.addCharactersListToSharedPref(characters);
+      final sharedPrefs = DependencyInjection.getSharedPrefs();
+      await sharedPrefs.addCharactersListToSharedPref(characters);
     }
-
   }
 }

@@ -1,13 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test_task_for_effective_mobile/di/dependency_injection.dart';
 import '../../domain/character.dart';
-import '../mapper.dart';
 
 class AppSharedPreferences {
   final _favourite = 'favourite characters';
   final _allCharacters = 'all characters';
   final _url = 'url for new characters';
   final _defaultUrl = 'https://rickandmortyapi.com/api/character';
-  final _mapper = Mapper();
+  final _mapper = DependencyInjection.getMapper();
 
   Future<void> addUrlForNewCharactersToSharedPref(String url) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,7 +47,7 @@ class AppSharedPreferences {
   }
 
   Future<void> addCharactersListToSharedPref(
-    List<Character> newCharacters
+    List<Character> newCharacters,
   ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<Character> characters = await getAllCharactersListFromSharedPref();
@@ -80,13 +80,13 @@ class AppSharedPreferences {
 
   Future<List<Character>> getFavouriteCharactersListFromSharedPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final charactersString = await prefs.getString(_favourite);
+    final charactersString = prefs.getString(_favourite);
     return _mapper.decodeCharacters(charactersString);
   }
 
   Future<List<Character>> getAllCharactersListFromSharedPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final charactersString = await prefs.getString(_allCharacters);
+    final charactersString = prefs.getString(_allCharacters);
     return _mapper.decodeCharacters(charactersString);
   }
 

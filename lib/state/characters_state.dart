@@ -1,40 +1,43 @@
 import 'package:flutter/cupertino.dart';
-import '../data/repository_impl.dart';
+import 'package:test_task_for_effective_mobile/di/dependency_injection.dart';
 import '../domain/character.dart';
 
 class CharactersState extends ChangeNotifier {
-  final _repository = RepositoryImpl();
+  final _repository = DependencyInjection.getRepository();
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   List<Character> _characters = [];
   List<Character> get characters => _characters;
   List<Character> _favouriteCharacters = [];
   List<Character> get favouriteCharacters => _favouriteCharacters;
+  List<Character> newCharacters = [];
 
   void init() async {
     if (_characters.isEmpty) {
-      loadCharacters();
+      await loadCharacters();
     }
   }
 
   Future<List<Character>> getAllCharacters() async {
     _characters = await _repository.getAllCharacters();
-    notifyListeners();
     return _characters;
   }
 
-  Future<void> loadCharacters() async {
+  Future<List<Character>> loadCharacters() async {
     _isLoading = true;
-    await _repository.loadNewCharacters();
+    newCharacters = await _repository.loadNewCharacters();
     _favouriteCharacters = await _repository.getFavouriteCharacters();
     _characters = await getAllCharacters();
     _isLoading = false;
     notifyListeners();
+    for (var character in newCharacters) {
+      _repository.saveImageToDeviceFromUrl(character);
+    }
+    return newCharacters;
   }
 
   Future<List<Character>> getFavouriteCharacters() async {
     _favouriteCharacters = await _repository.getFavouriteCharacters();
-    notifyListeners();
     return favouriteCharacters;
   }
 

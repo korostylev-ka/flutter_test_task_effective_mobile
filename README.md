@@ -1,16 +1,38 @@
-# test_task_for_effective_mobile
+# Тестовое задание "Список персонажей Рика и Морти"
 
-A new Flutter project.
+***Кроссплатформенное приложение*** **"test_task_for_effective_mobile"**, созданное с помощью фреймворка **Flutter** и поддерживающее следующие платформы:
+* Andoid
+* IOS
+* Windows
+* Web
 
-## Getting Started
+## Описание приложения
+Приложение позволяет загружать списки персонажей с https://rickandmortyapi.com/documentation/ и выводить список с краткой информацией по персонажу, а именно:
+* Изображение персонажа
+* Имя персонажа
+* Название локации персонажа
+* Статут персонажа
 
-This project is a starting point for a Flutter application.
+Загруженный персонаж может быть добавлен в список избранных, а также удален из него. При этом в разделе избранных персонажей доступна сортировка по имени, статусу или локации.
 
-A few resources to get you started if this is your first Flutter project:
+Загруженные данные сохраняются локально (в мобильном приложении с помощью **SQLite**, в десктопном и веб приложениях используется **SharedPreferences**), что позволяет работать даже при отсутствии интернета.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+В приложении присутствует возможность динамического переключения темы.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## Важно
+Возможны проблемы при загрузке данных с сервера, поэтому рекомендуется использовать **VPN**
+
+## Зависимости и версии, используемые в проекте
+* **Flutter:** ">=3.29.0"
+* **Dart:** ">=3.8.1 <4.0.0"
+* **provider:** "^6.1.5+1"
+* **http:** "^1.6.0"
+* **sqflite** "^2.4.2"
+* **shared_preferences** "^2.5.3"
+* **path_provider** "^2.1.5"
+
+## Запуск приложения
+В **Android Studio** в терминале выполните команды:
+* flutter pub get
+* flutter run

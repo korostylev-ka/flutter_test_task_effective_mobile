@@ -1,12 +1,8 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../resources/strings.dart';
 import '../state/characters_state.dart';
 import 'animated_favourites_list.dart';
-import 'character_card.dart';
 
 class FavouriteScreen extends StatefulWidget {
   const FavouriteScreen({super.key});
@@ -16,7 +12,6 @@ class FavouriteScreen extends StatefulWidget {
 }
 
 class _FavouriteScreenState extends State<FavouriteScreen> {
-
   void sortByName() {
     Provider.of<CharactersState>(context, listen: false).sortFavouriteByName();
   }

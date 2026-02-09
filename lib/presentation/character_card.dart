@@ -1,29 +1,59 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../domain/character.dart';
 import '../resources/decorations.dart';
 import '../resources/dimens.dart';
 import '../resources/strings.dart';
 import '../resources/text_styles.dart';
-import '../state/characters_state.dart';
 
 class CharacterCard extends StatefulWidget {
   const CharacterCard({
     super.key,
     required this.character,
-    required this.image,
     required this.onClickCallback,
   });
 
   final Character character;
   final void Function() onClickCallback;
-  final Image image;
 
   @override
   State<CharacterCard> createState() => _CharacterCardState();
 }
 
 class _CharacterCardState extends State<CharacterCard> {
+  Image _loadImage() {
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        if (widget.character.image.startsWith('http')) {
+          return Image.network(
+            widget.character.image,
+            errorBuilder: (context, object, stacktrace) {
+              return Image.asset('assets/images/no_photo.jpg');
+            },
+          );
+        } else {
+          return Image.file(
+            File(widget.character.image),
+            errorBuilder: (context, object, stacktrace) {
+              return Image.asset('assets/images/no_photo.jpg');
+            },
+          );
+        }
+      } catch (e) {
+        return Image.asset('assets/images/no_photo.jpg');
+      }
+    } else {
+      return Image.network(
+        widget.character.image,
+        errorBuilder: (context, object, stacktrace) {
+          return Image.asset('assets/images/no_photo.jpg');
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +66,7 @@ class _CharacterCardState extends State<CharacterCard> {
         children: [
           Expanded(
             flex: 1,
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: widget.image,
-            ),
+            child: FittedBox(fit: BoxFit.contain, child: _loadImage()),
           ),
           SizedBox(width: Dimens.spaceBetweenBlocks),
           Expanded(

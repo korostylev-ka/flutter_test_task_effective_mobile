@@ -25,7 +25,7 @@ class DBService {
 
   Future<void> insert(CharacterEntity characterEntity) async {
     final db = await database;
-    await db.insert(
+    db.insert(
       CharacterEntity.table,
       characterEntity.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -142,7 +142,7 @@ class DBService {
 
   Future<void> update(CharacterEntity characterEntity) async {
     final db = await database;
-    await db.update(
+    db.update(
       CharacterEntity.table,
       characterEntity.toMap(),
       where: 'name = ?',

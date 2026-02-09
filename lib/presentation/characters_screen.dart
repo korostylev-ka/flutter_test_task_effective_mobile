@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_task_for_effective_mobile/state/characters_state.dart';
@@ -15,39 +13,13 @@ class CharactersScreen extends StatefulWidget {
 class _CharactersScreenState extends State<CharactersScreen> {
   final _scrollController = ScrollController();
 
-  Image _loadImage(String imageName) {
-    if (defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.windows ||
-        defaultTargetPlatform == TargetPlatform.iOS) {
-      try {
-        final file = File(imageName);
-        final imageFromCache = Image.file(file);
-        return imageFromCache;
-      } catch (e) {
-        return Image.network(
-          imageName,
-          errorBuilder: (context, object, stacktrace) {
-            return Image.asset('assets/images/no_photo.jpg');
-          },
-        );
-      }
-    } else {
-      return Image.network(
-        imageName,
-        errorBuilder: (context, object, stacktrace) {
-          return Image.asset('assets/images/no_photo.jpg');
-        },
-      );
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      if (_scrollController.position.maxScrollExtent ==
-          _scrollController.offset) {
-        print('SCroll position is ${_scrollController.offset}');
+      final position =
+          _scrollController.offset / _scrollController.position.maxScrollExtent;
+      if (position >= 0.8) {
         Provider.of<CharactersState>(context, listen: false).loadCharacters();
       }
     });
@@ -78,7 +50,6 @@ class _CharactersScreenState extends State<CharactersScreen> {
                           listen: false,
                         ).addToFavourite(state.characters[index]);
                       },
-                      image: _loadImage(state.characters[index].image),
                     );
                   },
                 ),
